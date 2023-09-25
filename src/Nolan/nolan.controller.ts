@@ -2,11 +2,9 @@ import { NolanService } from './nolan.service';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpException,
   HttpStatus,
-  Param,
   Post,
   Query,
   UsePipes,
