@@ -23,6 +23,7 @@ export class SurveyService {
     const findQuery = {};
     if (age != undefined) findQuery['age'] = age;
     if (gender != undefined) findQuery['gender'] = gender;
+    if (answer_no != undefined) findQuery['answer_no'] = gender;
     if (Array.isArray(question_id)) {
       findQuery['question_id'] = { $in: question_id };
     }

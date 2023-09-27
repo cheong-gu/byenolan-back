@@ -16,7 +16,7 @@ export class Survey {
   answer_no: number;
 }
 
-export const ResultSchema = SchemaFactory.createForClass(Survey);
+export const SurveySchema = SchemaFactory.createForClass(Survey);
 
 export class SurveyDto {
   @IsNotEmpty()
