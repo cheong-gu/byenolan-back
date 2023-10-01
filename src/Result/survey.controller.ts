@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  Param,
   Query,
   UsePipes,
   ValidationPipe,
@@ -47,5 +48,11 @@ export class SurveyController {
     }
 
     return this.surveyService.create(createSurveyDto);
-  }
+    }
+
+    @Get('/percent/:id')
+    async getPercentage(@Param('question_id') question_id: any) {
+        return this.surveyService.percentage(question_id);
+    }
+
 }

@@ -42,5 +42,61 @@ export class SurveyService {
       data: results,
       totalLength: datas.length,
     };
-  }
+    }
+
+    async percentage({
+        question_id
+    }): Promise<any> {
+        const findQuery = {};
+
+        const datas = await this.surveyModel.aggregate([
+            {
+                $match: { "question_id": question_id }
+                },
+            {
+                $group: {
+                    _id: {
+                        question_id: "$question_id",
+                        answer_no: "$answer_no"
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.question_id",
+                    counts: {
+                        $push: {
+                            question_id: "$_id.question_id",
+                            answer_no: "$_id.answer_no",
+                            count: "$count"
+                        }
+                    },
+                    totalcount: { $sum: "$count" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    counts: 1,
+                    totalcount: 1
+                }
+            }
+        ]).exec();
+
+        if (datas && datas.length > 0) {
+            const resultWithPercentage = datas.map((item) => {
+                const countsWithPercentage = item.counts.map((countItem) => {
+                    const percentage = (countItem.count / item.totalcount) * 100;
+                    return { ...countItem, percentage };
+                });
+
+                return { ...item, counts: countsWithPercentage };
+            });
+
+            return resultWithPercentage;
+        }
+
+        return datas; // 결과 반환
+    }
 }
