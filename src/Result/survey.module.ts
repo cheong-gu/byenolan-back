@@ -11,4 +11,4 @@ import { SurveyService } from './survey.service';
   controllers: [SurveyController],
   providers: [SurveyService],
 })
-export class NolanModule {}
+export class SurveyModule {}

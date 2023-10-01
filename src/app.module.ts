@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NolanModule } from './Nolan/nolan.module';
+import { SurveyModule } from './Result/survey.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -11,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       'mongodb+srv://ByeNolan:ByeNolan@byenolan.sje6f0n.mongodb.net/',
     ),
     NolanModule,
+    SurveyModule,
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
