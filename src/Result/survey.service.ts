@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Survey, SurveyDto } from './survey.schema';
 import { Model } from 'mongoose';
+import { IsNumber } from 'class-validator';
 
 @Injectable()
 export class SurveyService {
@@ -44,14 +45,12 @@ export class SurveyService {
     };
     }
 
-    async percentage({
-        question_id
-    }): Promise<any> {
-        const findQuery = {};
+    async percentage(question_id) {
 
+        const id = parseInt(question_id);
         const datas = await this.surveyModel.aggregate([
             {
-                $match: { "question_id": question_id }
+                $match: { "question_id": id }
                 },
             {
                 $group: {
@@ -94,10 +93,8 @@ export class SurveyService {
 
                 return { ...item, counts: countsWithPercentage };
             });
-
             return resultWithPercentage;
         }
-
         return datas; // 결과 반환
     }
 }
