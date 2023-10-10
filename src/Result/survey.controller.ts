@@ -48,11 +48,10 @@ export class SurveyController {
     }
 
     return this.surveyService.create(createSurveyDto);
-    }
+  }
 
-    @Get('/percent/:question_id')
-    async getPercentage(@Param('question_id') question_id: number) {
-        return this.surveyService.percentage(question_id);
-    }
-
+  @Get('/percent/:question_id')
+  async getPercentage(@Param('question_id') question_id: number) {
+    return this.surveyService.percentage(question_id);
+  }
 }

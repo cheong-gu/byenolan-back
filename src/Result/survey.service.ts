@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Survey, SurveyDto } from './survey.schema';
 import { Model } from 'mongoose';
-import { IsNumber } from 'class-validator';
 
 @Injectable()
 export class SurveyService {
@@ -43,58 +42,59 @@ export class SurveyService {
       data: results,
       totalLength: datas.length,
     };
-    }
+  }
 
-    async percentage(question_id) {
-
-        const id = parseInt(question_id);
-        const datas = await this.surveyModel.aggregate([
-            {
-                $match: { "question_id": id }
-                },
-            {
-                $group: {
-                    _id: {
-                        question_id: "$question_id",
-                        answer_no: "$answer_no"
-                    },
-                    count: { $sum: 1 }
-                }
+  async percentage(question_id) {
+    const id = parseInt(question_id);
+    const datas = await this.surveyModel
+      .aggregate([
+        {
+          $match: { question_id: id },
+        },
+        {
+          $group: {
+            _id: {
+              question_id: '$question_id',
+              answer_no: '$answer_no',
             },
-            {
-                $group: {
-                    _id: "$_id.question_id",
-                    counts: {
-                        $push: {
-                            question_id: "$_id.question_id",
-                            answer_no: "$_id.answer_no",
-                            count: "$count"
-                        }
-                    },
-                    totalcount: { $sum: "$count" }
-                }
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: '$_id.question_id',
+            counts: {
+              $push: {
+                question_id: '$_id.question_id',
+                answer_no: '$_id.answer_no',
+                count: '$count',
+              },
             },
-            {
-                $project: {
-                    _id: 0,
-                    counts: 1,
-                    totalcount: 1
-                }
-            }
-        ]).exec();
+            totalcount: { $sum: '$count' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            counts: 1,
+            totalcount: 1,
+          },
+        },
+      ])
+      .exec();
 
-        if (datas && datas.length > 0) {
-            const resultWithPercentage = datas.map((item) => {
-                const countsWithPercentage = item.counts.map((countItem) => {
-                    const percentage = (countItem.count / item.totalcount) * 100;
-                    const formattedPercentage = `${percentage.toFixed(0)}%`;
-                    return { ...countItem, formattedPercentage };
-                });
+    if (datas && datas.length > 0) {
+      const resultWithPercentage = datas.map((item) => {
+        const countsWithPercentage = item.counts.map((countItem) => {
+          const percentage = (countItem.count / item.totalcount) * 100;
+          const formattedPercentage = `${percentage.toFixed(0)}%`;
+          return { ...countItem, formattedPercentage };
+        });
 
-                return { ...item, counts: countsWithPercentage };
-            });
-            return resultWithPercentage;
-        }
-        return datas; // 결과 반환
+        return { ...item, counts: countsWithPercentage };
+      });
+      return resultWithPercentage;
     }
+    return datas; // 결과 반환
+  }
 }
