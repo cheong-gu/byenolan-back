@@ -54,4 +54,9 @@ export class SurveyController {
   async getPercentage(@Param('question_id') question_id: number) {
     return this.surveyService.percentage(question_id);
   }
+
+  @Get('/total')
+  async getTotal() {
+    return this.surveyService.total();
+  }
 }
