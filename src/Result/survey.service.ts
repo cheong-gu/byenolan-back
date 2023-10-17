@@ -96,96 +96,115 @@ export class SurveyService {
 
   async total(question_id) {
     const datas = await this.surveyModel
-      .aggregate([
-        {
-          $match: { question_id: { $in: question_id } },
-        },
-        {
-          $lookup: {
-            from: 'nolan',
-            let: { question_id: '$question_id', answer_no: '$answer_no' },
-            pipeline: [
-              {
-                $unwind: '$answers',
-              },
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ['$question_id', '$$question_id'] },
-                      { $eq: ['$answers.answer_no', '$$answer_no'] },
+        .aggregate([
+            {
+                $match: { question_id: { $in: question_id } },
+            },
+            {
+                $lookup: {
+                    from: 'nolan',
+                    let: { question_id: '$question_id', answer_no: '$answer_no' },
+                    pipeline: [
+                        {
+                            $unwind: '$answers',
+                        },
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$question_id', '$$question_id'] },
+                                        { $eq: ['$answers.answer_no', '$$answer_no'] },
+                                    ],
+                                },
+                            },
+                        },
                     ],
-                  },
+                    as: 'joinedData',
                 },
-              },
-            ],
-            as: 'joinedData',
-          },
-        },
-        { $unwind: '$joinedData' },
-        {
-          $project: {
-            _id: 0,
-            age: 1,
-            gender: 1,
-            question_id: 1,
-            answer_no: 1,
-            answer: '$joinedData.answers.answer',
-            today_question: '$joinedData.today_question',
-            question: '$joinedData.question',
-          },
-        },
-        {
-          $group: {
-            _id: {
-              question_id: '$question_id',
-              answer_no: '$answer_no',
             },
-            age: { $first: '$age' },
-            gender: { $first: '$gender' },
-            answer: { $first: '$answer' },
-            today_question: { $first: '$today_question' },
-            question: { $first: '$question' },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $group: {
-            _id: '$_id.question_id', // question_id로 다시 그룹화
-            counts: {
-              $push: {
-                answer_no: '$_id.answer_no',
-                count: '$count',
-                age: '$age',
-                gender: '$gender',
-                answer: '$answer',
-                today_question: '$today_question',
-                question: '$question',
-              },
+            { $unwind: '$joinedData' },
+            {
+                $project: {
+                    _id: 0,
+                    age: 1,
+                    gender: 1,
+                    question_id: 1,
+                    answer_no: 1,
+                    answer: '$joinedData.answers.answer',
+                    today_question: '$joinedData.today_question',
+                    question: '$joinedData.question',
+                },
             },
-            totalcount: { $sum: '$count' },
-          },
-        },
-        { $unwind: '$counts' },
-        {
-          $project: {
-            _id: 0, // _id 필드를 유지합니다.
-            totalcount: 1,
-            count: '$counts.count',
-            question_id: '$_id',
-            answer: '$counts.answer',
-            answer_no: '$counts.answer_no',
-            question: '$counts.question',
-            today_question: '$counts.today_question',
-          },
-        },
-      ])
-      .sort({ question_id: 1 })
+            {
+                $group: {
+                    _id: {
+                        question_id: '$question_id',
+                        answer_no: '$answer_no',
+                    },
+                    age: { $first: '$age' },
+                    gender: { $first: '$gender' },
+                    answer: { $first: '$answer' },
+                    today_question: { $first: '$today_question' },
+                    question: { $first: '$question' },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $group: {
+                    _id: '$_id.question_id', // question_id로 다시 그룹화
+                    counts: {
+                        $push: {
+                            answer_no: '$_id.answer_no',
+                            count: '$count',
+                            age: '$age',
+                            gender: '$gender',
+                            answer: '$answer',
+                            today_question: '$today_question',
+                            question: '$question',
+                        },
+                    },
+                    totalcount: { $sum: '$count' },
+                },
+            },
+            {
+                $unwind: '$counts',
+            },
+            {
+                $project: {
+                    _id: 0, // _id 필드를 유지합니다.
+                    totalcount: 1,
+                    count: '$counts.count',
+                    question_id: '$_id',
+                    answer: '$counts.answer',
+                    answer_no: '$counts.answer_no',
+                    question: '$counts.question',
+                    today_question: '$counts.today_question',
+                },
+            },
+            {
+                $group: {
+                    _id: '$question_id', // question_id로 다시 그룹화
+                    survey: {
+                        $push: {
+                            answer_no: '$answer_no',
+                            count: '$count',
+                            age: '$age',
+                            gender: '$gender',
+                            answer: '$answer',
+                            today_question: '$today_question',
+                            question: '$question',
+                        },
+                    },
+                    totalcount: { $first: '$totalcount' },
+                },
+            },
+        ])
+        .sort({ question_id: 1 })
       .exec();
 
     if (datas && datas.length > 0) {
       const resultWithPercentage = datas.map((item) => {
-        const percentage = (item.count / item.totalcount) * 100;
+        const percentage = (item.survey.count / item.totalcount) * 100;
         const formattedPercentage = `${percentage.toFixed(0)}%`;
         return { ...item, formattedPercentage };
       });
