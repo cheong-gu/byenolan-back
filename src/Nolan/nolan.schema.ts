@@ -12,8 +12,8 @@ export class Nolan {
   type: string;
   @Prop()
   question: string;
-  @Prop([{ answer: String, answer_no: Number }]) // answers 속성에 대한 스키마 정의
-  answers: Array<{ answer: string; answer_no: number }>;
+  @Prop([{ answer: String, answer_no: String }]) // answers 속성에 대한 스키마 정의
+  answers: Array<{ answer: string; answer_no: string }>;
   @Prop()
   today_question: string;
   @Prop()
@@ -30,7 +30,7 @@ export class NolanDto {
   @IsNotEmpty()
   question: string;
   @IsNotEmpty() // answers 속성에 대한 스키마 정의
-  answers: Array<{ answer: string; answer_no: number }>;
+  answers: Array<{ answer: string; answer_no: string }>;
   @IsNotEmpty()
   today_question: string;
   @IsNotEmpty()

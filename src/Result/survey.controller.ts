@@ -11,7 +11,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Survey, SurveyDto } from './survey.schema';
+import { SurveyDto } from './survey.schema';
 import { validate } from 'class-validator';
 
 @Controller('survey')
@@ -55,8 +55,8 @@ export class SurveyController {
     return this.surveyService.percentage(question_id);
   }
 
-  @Get('/total')
-  async getTotal() {
-    return this.surveyService.total();
+  @Get('/total/:question_id')
+  async getTotal(@Param('question_id') question_id: Array<number>) {
+    return this.surveyService.total(question_id);
   }
 }

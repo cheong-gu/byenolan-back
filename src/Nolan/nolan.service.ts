@@ -30,17 +30,13 @@ export class NolanService {
     if (question_id != undefined) findQuery['question_id'] = question_id;
     if (page == undefined) page = 1;
 
-  /*  const limit = 20;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;*/
-
     const datas = await this.nolanModel.find(findQuery).exec();
     datas.reverse();
 
-    //const results = datas.slice(startIndex, endIndex);
+    const results = datas;
 
     return {
-      data: datas,
+      data: results,
       totalLength: datas.length,
     };
   }

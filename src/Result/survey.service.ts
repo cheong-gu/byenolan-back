@@ -29,14 +29,10 @@ export class SurveyService {
     }
     if (page == undefined) page = 1;
 
-    const limit = 20;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-
     const datas = await this.surveyModel.find(findQuery).exec();
     datas.reverse();
 
-    const results = datas.slice(startIndex, endIndex);
+    const results = datas;
 
     return {
       data: results,
@@ -98,9 +94,12 @@ export class SurveyService {
     return datas; // 결과 반환
   }
 
-  async total() {
+  async total(question_id) {
     const datas = await this.surveyModel
       .aggregate([
+        {
+          $match: { question_id: { $in: question_id } },
+        },
         {
           $lookup: {
             from: 'nolan',
@@ -171,16 +170,17 @@ export class SurveyService {
         {
           $project: {
             _id: 0, // _id 필드를 유지합니다.
-            age: 1,
-            gender: 1,
-            answer: 1,
-            question: 1,
-            question_id: 1,
-            counts: 1,
             totalcount: 1,
+            count: '$counts.count',
+            question_id: '$_id',
+            answer: '$counts.answer',
+            answer_no: '$counts.answer_no',
+            question: '$counts.question',
+            today_question: '$counts.today_question',
           },
         },
       ])
+      .sort({ question_id: 1 })
       .exec();
 
     if (datas && datas.length > 0) {
