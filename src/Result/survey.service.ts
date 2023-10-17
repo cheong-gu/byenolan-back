@@ -185,13 +185,9 @@ export class SurveyService {
 
     if (datas && datas.length > 0) {
       const resultWithPercentage = datas.map((item) => {
-        const countsWithPercentage = item.counts.map((countItem) => {
-          const percentage = (countItem.count / item.totalcount) * 100;
-          const formattedPercentage = `${percentage.toFixed(0)}%`;
-          return { ...countItem, formattedPercentage };
-        });
-
-        return { ...item, counts: countsWithPercentage };
+        const percentage = (item.count / item.totalcount) * 100;
+        const formattedPercentage = `${percentage.toFixed(0)}%`;
+        return { ...item, formattedPercentage };
       });
       return resultWithPercentage;
     }
