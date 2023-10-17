@@ -56,7 +56,8 @@ export class SurveyController {
   }
 
   @Get('/total/:question_id')
-  async getTotal(@Param('question_id') question_id: Array<number>) {
-    return this.surveyService.total(question_id);
+  async getTotal(@Param('question_id') question_id: string) {
+    const questionIds = question_id.split(',').map(Number); // 문자열을 배열로 파싱하고 숫자로 변환
+    return this.surveyService.total(questionIds);
   }
 }
