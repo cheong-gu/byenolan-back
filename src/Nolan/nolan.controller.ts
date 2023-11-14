@@ -50,4 +50,9 @@ export class NolanController {
 
     return this.nolanService.create(createNolanDto);
   }
+
+  @Get('/todayNolan')
+  async getTodayNolan() {
+    return this.nolanService.todayNolan();
+  }
 }
