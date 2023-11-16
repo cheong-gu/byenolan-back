@@ -126,6 +126,7 @@ export class NolanService {
         {
           $sort: {
             difference: 1,
+            question_id: 1,
           },
         },
         {
