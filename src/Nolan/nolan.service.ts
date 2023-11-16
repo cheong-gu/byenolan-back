@@ -61,6 +61,7 @@ export class NolanService {
                 }, // 老林老 傈 单捞磐
               ],
             },
+            type: 'AB',
           },
         },
         {
@@ -85,11 +86,22 @@ export class NolanService {
         },
         {
           $group: {
-            _id: '$question_id',
+            _id: {
+              question_id: '$question_id',
+              answer_no: '$answer_no',
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              question_id: '$_id.question_id',
+            },
             answers: {
               $push: {
-                answer_no: '$answer_no',
-                count: { $sum: 1 },
+                answer_no: '$_id.answer_no',
+                count: '$count',
               },
             },
           },
@@ -97,28 +109,21 @@ export class NolanService {
         {
           $project: {
             _id: 0,
-            question_id: '$_id',
+            question_id: '$_id.question_id',
             answers: 1,
           },
         },
         {
           $project: {
-            question_id: 1,
+            _id: 0,
             answers: 1,
+            question_id: 1,
             difference: {
-              $min: {
-                $map: {
-                  input: '$answers',
-                  as: 'answer',
-                  in: {
-                    $abs: {
-                      $subtract: [
-                        '$$answer.count',
-                        { $arrayElemAt: ['$answers.count', 0] },
-                      ],
-                    },
-                  },
-                },
+              $abs: {
+                $subtract: [
+                  { $arrayElemAt: ['$answers.count', 0] },
+                  { $arrayElemAt: ['$answers.count', 1] },
+                ],
               },
             },
           },
