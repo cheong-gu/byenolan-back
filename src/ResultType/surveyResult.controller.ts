@@ -18,6 +18,24 @@ import { validate } from 'class-validator';
 export class SurveyResultController {
   constructor(private readonly surveyResultService: SurveyResult) {}
 
+  @Get()
+  async getSurveyResult(
+    @Query('age') age: string,
+    @Query('gender') gender: string,
+    @Query('percent') question_id: number,
+    @Query('title') answer_no: string,
+    @Query('page') page: string,
+  ): Promise<object> {
+    const res = await this.surveyResultService.findAll({
+      age,
+      gender,
+      percent,
+      title,
+      page,
+    });
+    return res;
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   async createUsers(@Body() createSurveyDto: SurveyResultDto) {
