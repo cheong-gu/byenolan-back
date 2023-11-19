@@ -16,14 +16,14 @@ import { validate } from 'class-validator';
 
 @Controller('surveyResult')
 export class SurveyResultController {
-  constructor(private readonly surveyResultService: SurveyResult) {}
+  constructor(private readonly surveyResultService: SurveyResultService) {}
 
   @Get()
   async getSurveyResult(
     @Query('age') age: string,
     @Query('gender') gender: string,
-    @Query('percent') question_id: number,
-    @Query('title') answer_no: string,
+      @Query('percent') percent: number,
+      @Query('title') title: string,
     @Query('page') page: string,
   ): Promise<object> {
     const res = await this.surveyResultService.findAll({
