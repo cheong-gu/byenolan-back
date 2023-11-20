@@ -36,20 +36,22 @@ export class SurveyResultController {
     return res;
   }
 
-  @Get('result/:percent')
-  async getResult(@Param('percent') percent: number) {
-    return this.surveyResultService.findResult(percent);
-  }
-
   @Post()
   @UsePipes(ValidationPipe)
-  async createUsers(@Body() createSurveyDto: SurveyResultDto) {
-    const errors = await validate(createSurveyDto);
+  async createUsers(@Body() createSurveyResultDto: SurveyResultDto) {
+    const errors = await validate(createSurveyResultDto);
     if (errors.length > 0) {
       throw new HttpException(
         '잘못된 요청 형식입니다.',
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    return this.surveyResultService.create(createSurveyResultDto);
+  }
+
+  @Get('/result/:percent')
+  async getResult(@Param('percent') percent: number) {
+    return this.surveyResultService.findResult(percent);
   }
 }

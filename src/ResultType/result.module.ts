@@ -11,4 +11,4 @@ import { SurveyResultService } from './surveyResult.service';
   controllers: [SurveyResultController],
   providers: [SurveyResultService],
 })
-export class SurveyModule {}
+export class ResultModule {}

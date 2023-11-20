@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type ResultDocument = HydratedDocument<Result>;
 
-@Schema({ collection: 'Result' })
+@Schema({ collection: 'result' })
 export class Result {
   @Prop()
   percent: number;

@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { NolanModule } from './Nolan/nolan.module';
 import { SurveyModule } from './Result/survey.module';
+import { SurveyResultModule } from './ResultType/surveyResult.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -13,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
     ),
     NolanModule,
     SurveyModule,
+    SurveyResultModule,
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,

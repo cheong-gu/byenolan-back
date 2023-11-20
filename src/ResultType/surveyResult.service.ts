@@ -56,9 +56,17 @@ export class SurveyResultService {
 
   async findResult(percent) {
     const datas = await this.resultModel
-      .find({ percent: { $gte: percent } })
-      .projection({ _id: 0, percent: 0 })
-      .limit(1)
+      .aggregate([
+        {
+          $match: {
+            $expr: {
+              $gt: ['$percent', percent],
+            },
+          },
+        },
+        { $project: { _id: 0, percent: 0 } },
+        { $limit: 1 },
+      ])
       .exec();
 
     if (datas && datas.length > 0) {
