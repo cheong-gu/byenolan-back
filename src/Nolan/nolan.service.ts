@@ -61,7 +61,7 @@ export class NolanService {
                 }, // 일주일 전 데이터
               ],
             },
-            type: '상황별',
+            type: { $ne: 'AB' },
           },
         },
         {
@@ -76,9 +76,8 @@ export class NolanService {
         },
       ])
       .exec();
-
     const questionId = datas.map((item) => item.question_id);
-
+    console.log(questionId);
     const resultData = await this.surveyModel
       .aggregate([
         {
@@ -141,7 +140,7 @@ export class NolanService {
       .exec();
 
     const question = resultData.map((item) => item.question_id);
-
+    console.log(question);
     return this.total(question);
   }
 
