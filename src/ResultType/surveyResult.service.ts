@@ -24,12 +24,12 @@ export class SurveyResultService {
     if (age != undefined) findQuery['age'] = age;
     if (gender != undefined) findQuery['gender'] = gender;
     if (title != undefined) findQuery['title'] = title;
-    if (percent == undefined) findQuery['percent'] = percent;
+    if (percent != undefined) findQuery['percent'] = percent;
     if (page == undefined) page = 1;
 
     const datas = await this.surveyResultModel
-      .aggregate([
-        { $match: { findQuery } },
+        .aggregate([
+            { $match: findQuery },
         {
           $group: {
             _id: { age: '$age', gender: '$gender', title: '$title' },
@@ -41,7 +41,8 @@ export class SurveyResultService {
             _id: 0,
             age: '$_id.age',
             gender: '$_id.gender',
-            title: '$_id.title',
+                title: '$_id.title',
+            count:1
           },
         },
       ])
