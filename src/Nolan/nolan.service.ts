@@ -61,7 +61,7 @@ export class NolanService {
                 }, // 일주일 전 데이터
               ],
             },
-            type: 'AB',
+            type: '상황별',
           },
         },
         {
