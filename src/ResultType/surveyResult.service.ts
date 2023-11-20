@@ -48,11 +48,7 @@ export class SurveyResultService {
       ])
       .exec();
 
-    const results = datas;
-
-    return {
-      data: results,
-    };
+      return datas;
   }
 
   async findResult(percent) {

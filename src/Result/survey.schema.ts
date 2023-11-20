@@ -13,7 +13,7 @@ export class Survey {
   @Prop()
   question_id: number;
   @Prop()
-  answer_no: number;
+  answer_no: string;
 }
 
 export const SurveySchema = SchemaFactory.createForClass(Survey);
@@ -24,7 +24,7 @@ export class SurveyDto {
   @IsNotEmpty()
   gender: string;
   @IsNotEmpty()
-  question_id: number;
+  question_id: string;
   @IsNotEmpty()
-  answer_no: number;
+  answer_no: string;
 }

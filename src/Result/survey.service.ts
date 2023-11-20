@@ -23,7 +23,7 @@ export class SurveyService {
     const findQuery = {};
     if (age != undefined) findQuery['age'] = age;
     if (gender != undefined) findQuery['gender'] = gender;
-    if (answer_no != undefined) findQuery['answer_no'] = gender;
+      if (answer_no != undefined) findQuery['answer_no'] = answer_no;
     if (Array.isArray(question_id)) {
       findQuery['question_id'] = { $in: question_id };
     }
@@ -203,11 +203,14 @@ export class SurveyService {
       .exec();
 
     if (datas && datas.length > 0) {
-      const resultWithPercentage = datas.map((item) => {
-        const percentage = (item.survey.count / item.totalcount) * 100;
-        const formattedPercentage = `${percentage.toFixed(0)}%`;
-        return { ...item, formattedPercentage };
-      });
+        const resultWithPercentage = datas.map((item) => {
+            const countsWithPercentage = item.survey.map((countItem) => {
+                const percentage = (countItem.count / item.totalcount) * 100;
+                const formattedPercentage = `${percentage.toFixed(0)}%`;
+                return { ...countItem, formattedPercentage };
+            });
+            return { ...item, survey: countsWithPercentage };
+        });
       return resultWithPercentage;
     }
     return datas; // 결과 반환
