@@ -51,7 +51,8 @@ export class SurveyResultService {
       return datas;
   }
 
-  async findResult(percent) {
+    async findResult(percent) {
+        percent = parseInt(percent);
     const datas = await this.resultModel
       .aggregate([
         {
@@ -65,7 +66,6 @@ export class SurveyResultService {
         { $limit: 1 },
       ])
       .exec();
-
     if (datas && datas.length > 0) {
       const datasResult = datas.map((item) => {
         const percentResult = percent;
