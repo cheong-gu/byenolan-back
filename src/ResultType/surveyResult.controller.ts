@@ -22,8 +22,8 @@ export class SurveyResultController {
   async getSurveyResult(
     @Query('age') age: string,
     @Query('gender') gender: string,
-      @Query('percent') percent: number,
-      @Query('title') title: string,
+    @Query('percent') percent: number,
+    @Query('title') title: string,
     @Query('page') page: string,
   ): Promise<object> {
     const res = await this.surveyResultService.findAll({
@@ -34,6 +34,11 @@ export class SurveyResultController {
       page,
     });
     return res;
+  }
+
+  @Get('result/:percent')
+  async getResult(@Param('percent') percent: number) {
+    return this.surveyResultService.findResult(percent);
   }
 
   @Post()

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { SurveyResult, SurveyResultDto } from './surveyResult.schema';
+import { Result } from './result.schema';
 import { Model } from 'mongoose';
 
 @Injectable()
@@ -8,6 +9,8 @@ export class SurveyResultService {
   constructor(
     @InjectModel(SurveyResult.name)
     private surveyResultModel: Model<SurveyResult>,
+    @InjectModel(Result.name)
+    private resultModel: Model<Result>,
   ) {}
 
   async create(createSurveyDto: SurveyResultDto): Promise<SurveyResult> {
@@ -49,5 +52,23 @@ export class SurveyResultService {
     return {
       data: results,
     };
+  }
+
+  async findResult(percent) {
+    const datas = await this.resultModel
+      .find({ percent: { $gte: percent } })
+      .projection({ _id: 0, percent: 0 })
+      .limit(1)
+      .exec();
+
+    if (datas && datas.length > 0) {
+      const datasResult = datas.map((item) => {
+        const percentResult = percent;
+        return { ...item, percentResult };
+      });
+      return datasResult;
+    }
+
+    return datas;
   }
 }

@@ -1,15 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Nolan, NolanDto } from './nolan.schema';
 import { Survey } from '../Result/survey.schema';
 import { Model } from 'mongoose';
+import * as cron from 'node-cron';
 
 @Injectable()
 export class NolanService {
+  private readonly logger = new Logger(NolanService.name);
+  question_id: any;
   constructor(
     @InjectModel(Nolan.name) private nolanModel: Model<Nolan>,
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
-  ) {}
+  ) {
+    cron.schedule('0 0 * * *', () => {
+      this.updateNolan(this.question_id);
+    });
+  }
 
   async create(createNolanDto: NolanDto): Promise<Nolan> {
     const createCat = new this.nolanModel(createNolanDto);
@@ -77,7 +84,6 @@ export class NolanService {
       ])
       .exec();
     const questionId = datas.map((item) => item.question_id);
-    console.log(questionId);
     const resultData = await this.surveyModel
       .aggregate([
         {
@@ -140,11 +146,11 @@ export class NolanService {
       .exec();
 
     const question = resultData.map((item) => item.question_id);
-    console.log(question);
     return this.total(question);
   }
 
   async total(question_id) {
+    this.question_id = question_id;
     const datas = await this.surveyModel
       .aggregate([
         {
@@ -265,5 +271,14 @@ export class NolanService {
       return resultWithPercentage;
     }
     return datas; // 결과 반환
+  }
+
+  async updateNolan(question_id) {
+    this.logger.log('Scheduled function executed at ' + new Date());
+    const todayDate = new Date();
+    await this.nolanModel.updateOne([
+      { question_id: question_id },
+      { $set: { today_question: todayDate } },
+    ]);
   }
 }

@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Query,
   UsePipes,
@@ -54,5 +55,9 @@ export class NolanController {
   @Get('/todayNolan')
   async getTodayNolan() {
     return this.nolanService.todayNolan();
+  }
+  @Post('/todayNolan')
+  async updateTodayNolan(@Query('questionId') questionId: number) {
+    return this.nolanService.updateNolan(questionId);
   }
 }
