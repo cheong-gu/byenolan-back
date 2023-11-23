@@ -28,8 +28,8 @@ export class SurveyResultService {
     if (page == undefined) page = 1;
 
     const datas = await this.surveyResultModel
-        .aggregate([
-            { $match: findQuery },
+      .aggregate([
+        { $match: findQuery },
         {
           $group: {
             _id: { age: '$age', gender: '$gender', title: '$title' },
@@ -41,18 +41,19 @@ export class SurveyResultService {
             _id: 0,
             age: '$_id.age',
             gender: '$_id.gender',
-                title: '$_id.title',
-            count:1
+            title: '$_id.title',
+            count: 1,
           },
         },
+        { $sort: { count: 1 } },
       ])
       .exec();
 
-      return datas;
+    return datas;
   }
 
-    async findResult(percent) {
-        percent = parseInt(percent);
+  async findResult(percent) {
+    percent = parseInt(percent);
     const datas = await this.resultModel
       .aggregate([
         {

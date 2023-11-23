@@ -273,11 +273,12 @@ export class NolanService {
     return datas; // 결과 반환
   }
 
-  async updateNolan(question_id) {
-    this.logger.log('Scheduled function executed at ' + new Date());
+  async updateNolan(question) {
     const todayDate = new Date();
+    this.logger.log('Scheduled function executed at ' + todayDate);
+    this.logger.log('Scheduled argument executed at ' + question);
     await this.nolanModel.updateOne([
-      { question_id: question_id },
+      { question_id: question },
       { $set: { today_question: todayDate } },
     ]);
   }
