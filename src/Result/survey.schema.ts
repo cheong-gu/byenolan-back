@@ -19,9 +19,7 @@ export class Survey {
 export const SurveySchema = SchemaFactory.createForClass(Survey);
 
 export class SurveyDto {
-  @IsNotEmpty()
   age: string;
-  @IsNotEmpty()
   gender: string;
   @IsNotEmpty()
   question_id: string;
