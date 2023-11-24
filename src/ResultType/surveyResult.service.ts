@@ -45,7 +45,7 @@ export class SurveyResultService {
             count: 1,
           },
         },
-        { $sort: { count: 1 } },
+        { $sort: { count: -1 } },
       ])
       .exec();
 
