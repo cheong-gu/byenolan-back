@@ -49,6 +49,23 @@ export class SurveyResultService {
       ])
       .exec();
 
+    let totalCount = 0;
+    if (datas && datas.length > 0) {
+      datas.map((item) => {
+        totalCount += item.count;
+        return { ...item };
+      });
+    }
+
+    if (datas && datas.length > 0) {
+      const result = datas.map((item) => {
+        const percentage = (item.count / totalCount) * 100;
+        const percent = `${percentage.toFixed(0)}%`;
+        return { ...item, percent };
+      });
+      return result;
+    }
+
     return datas;
   }
 
