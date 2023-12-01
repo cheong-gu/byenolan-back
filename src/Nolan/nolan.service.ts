@@ -14,6 +14,7 @@ export class NolanService {
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
   ) {
     cron.schedule('0 0 * * *', () => {
+      console.log(this.question_id);
       this.updateNolan(this.question_id);
     });
   }
@@ -277,9 +278,9 @@ export class NolanService {
     const todayDate = new Date();
     this.logger.log('Scheduled function executed at ' + todayDate);
     this.logger.log('Scheduled argument executed at ' + question);
-    await this.nolanModel.updateOne([
+    await this.nolanModel.updateOne(
       { question_id: question },
       { $set: { today_question: todayDate } },
-    ]);
+    );
   }
 }
