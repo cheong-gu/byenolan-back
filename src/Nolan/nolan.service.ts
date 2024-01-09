@@ -14,6 +14,7 @@ export class NolanService {
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
   ) {
     cron.schedule('0 0 * * *', () => {
+      this.question_id = this.dayNolan();
       console.log(this.question_id);
       this.updateNolan(this.question_id);
     });
@@ -54,104 +55,108 @@ export class NolanService {
   }
 
   async todayNolan() {
-    const datas = await this.nolanModel
-      .aggregate([
-        {
-          $match: {
-            $expr: {
-              $or: [
-                { $eq: ['$today_question', null] }, // today_question이 null인 경우
-                {
-                  $lt: [
-                    '$today_question',
-                    { $subtract: [new Date(), 7 * 24 * 60 * 60 * 1000] },
-                  ],
-                }, // 일주일 전 데이터
-              ],
-            },
-            type: { $ne: 'AB' },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            answers: 0,
-            category: 0,
-            type: 0,
-            question: 0,
-            today_question: 0,
-          },
-        },
-      ])
-      .exec();
-    const questionId = datas.map((item) => item.question_id);
-    const resultData = await this.surveyModel
-      .aggregate([
-        {
-          $match: { question_id: { $in: questionId } },
-        },
-        {
-          $group: {
-            _id: {
-              question_id: '$question_id',
-              answer_no: '$answer_no',
-            },
-            count: { $sum: 1 },
-          },
-        },
-        {
-          $group: {
-            _id: {
-              question_id: '$_id.question_id',
-            },
-            answers: {
-              $push: {
-                answer_no: '$_id.answer_no',
-                count: '$count',
-              },
-            },
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            question_id: '$_id.question_id',
-            answers: 1,
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            answers: 1,
-            question_id: 1,
-            difference: {
-              $abs: {
-                $subtract: [
-                  { $arrayElemAt: ['$answers.count', 0] },
-                  { $arrayElemAt: ['$answers.count', 1] },
+    if (this.question_id == null) {
+      const datas = await this.nolanModel
+        .aggregate([
+          {
+            $match: {
+              $expr: {
+                $or: [
+                  { $eq: ['$today_question', null] }, // today_question이 null인 경우
+                  {
+                    $lt: [
+                      '$today_question',
+                      { $subtract: [new Date(), 7 * 24 * 60 * 60 * 1000] },
+                    ],
+                  }, // 일주일 전 데이터
                 ],
               },
+              type: { $ne: 'AB' },
             },
           },
-        },
-        {
-          $sort: {
-            difference: 1,
-            question_id: 1,
+          {
+            $project: {
+              _id: 0,
+              answers: 0,
+              category: 0,
+              type: 0,
+              question: 0,
+              today_question: 0,
+            },
           },
-        },
-        {
-          $limit: 1,
-        },
-      ])
-      .exec();
+        ])
+        .exec();
+      const questionId = datas.map((item) => item.question_id);
+      const resultData = await this.surveyModel
+        .aggregate([
+          {
+            $match: { question_id: { $in: questionId } },
+          },
+          {
+            $group: {
+              _id: {
+                question_id: '$question_id',
+                answer_no: '$answer_no',
+              },
+              count: { $sum: 1 },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                question_id: '$_id.question_id',
+              },
+              answers: {
+                $push: {
+                  answer_no: '$_id.answer_no',
+                  count: '$count',
+                },
+              },
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              question_id: '$_id.question_id',
+              answers: 1,
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              answers: 1,
+              question_id: 1,
+              difference: {
+                $abs: {
+                  $subtract: [
+                    { $arrayElemAt: ['$answers.count', 0] },
+                    { $arrayElemAt: ['$answers.count', 1] },
+                  ],
+                },
+              },
+            },
+          },
+          {
+            $sort: {
+              difference: 1,
+              question_id: 1,
+            },
+          },
+          {
+            $limit: 1,
+          },
+        ])
+        .exec();
 
-    const question = resultData.map((item) => item.question_id);
-    return this.total(question);
+      const question = resultData.map((item) => item.question_id);
+      return this.total(question);
+    } else {
+      console.log('crontab activation');
+      return this.total(this.question_id);
+    }
   }
 
   async total(question_id) {
-    this.question_id = question_id;
     const datas = await this.surveyModel
       .aggregate([
         {
@@ -272,6 +277,103 @@ export class NolanService {
       return resultWithPercentage;
     }
     return datas; // 결과 반환
+  }
+
+  async dayNolan() {
+    const datas = await this.nolanModel
+      .aggregate([
+        {
+          $match: {
+            $expr: {
+              $or: [
+                { $eq: ['$today_question', null] }, // today_question이 null인 경우
+                {
+                  $lt: [
+                    '$today_question',
+                    { $subtract: [new Date(), 7 * 24 * 60 * 60 * 1000] },
+                  ],
+                }, // 일주일 전 데이터
+              ],
+            },
+            type: { $ne: 'AB' },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            answers: 0,
+            category: 0,
+            type: 0,
+            question: 0,
+            today_question: 0,
+          },
+        },
+      ])
+      .exec();
+    const questionId = datas.map((item) => item.question_id);
+    const resultData = await this.surveyModel
+      .aggregate([
+        {
+          $match: { question_id: { $in: questionId } },
+        },
+        {
+          $group: {
+            _id: {
+              question_id: '$question_id',
+              answer_no: '$answer_no',
+            },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              question_id: '$_id.question_id',
+            },
+            answers: {
+              $push: {
+                answer_no: '$_id.answer_no',
+                count: '$count',
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            question_id: '$_id.question_id',
+            answers: 1,
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            answers: 1,
+            question_id: 1,
+            difference: {
+              $abs: {
+                $subtract: [
+                  { $arrayElemAt: ['$answers.count', 0] },
+                  { $arrayElemAt: ['$answers.count', 1] },
+                ],
+              },
+            },
+          },
+        },
+        {
+          $sort: {
+            difference: 1,
+            question_id: 1,
+          },
+        },
+        {
+          $limit: 1,
+        },
+      ])
+      .exec();
+
+    const question = resultData.map((item) => item.question_id);
+    return question;
   }
 
   async updateNolan(question) {
