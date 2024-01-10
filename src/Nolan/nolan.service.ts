@@ -86,7 +86,8 @@ export class NolanService {
           },
         ])
         .exec();
-      const questionId = datas.map((item) => item.question_id);
+      const questionId = [];
+      questionId.push(datas.map((item) => item.question_id));
       const resultData = await this.surveyModel
         .aggregate([
           {
@@ -151,7 +152,6 @@ export class NolanService {
       const question = resultData.map((item) => item.question_id);
       return this.total(question);
     } else {
-      console.log('crontab activation');
       return this.total(this.question_id);
     }
   }

@@ -1,7 +1,11 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\Nolan",
+    "\\src\\Result",
+    "\\src\\ResultType"
   ],
-  "SelectedNode": "\\C:\\Users\\user\\Source\\Repos\\byenolan-back",
+  "SelectedNode": "\\src\\Result\\survey.schema.ts",
   "PreviewInSolutionExplorer": false
 }
