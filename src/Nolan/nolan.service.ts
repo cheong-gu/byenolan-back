@@ -86,8 +86,7 @@ export class NolanService {
           },
         ])
         .exec();
-      const questionId = [];
-      questionId.push(datas.map((item) => item.question_id));
+      const questionId = datas.map((item) => item.question_id);
       const resultData = await this.surveyModel
         .aggregate([
           {
@@ -157,6 +156,7 @@ export class NolanService {
   }
 
   async total(question_id) {
+    console.log(question_id);
     const datas = await this.surveyModel
       .aggregate([
         {
