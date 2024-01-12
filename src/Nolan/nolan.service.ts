@@ -372,7 +372,7 @@ export class NolanService {
       ])
       .exec();
 
-    const question = resultData.map((item) => item.question_id);
+    const question = await resultData.map((item) => item.question_id);
     return question;
   }
 
