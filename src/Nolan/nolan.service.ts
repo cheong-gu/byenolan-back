@@ -149,14 +149,16 @@ export class NolanService {
         .exec();
 
       const question = resultData.map((item) => item.question_id);
+      console.log('questionId is undefiend' + question);
       return this.total(question);
     } else {
+      console.log('questionId is exist' + this, this.question_id);
       return this.total(this.question_id);
     }
   }
 
   async total(question_id) {
-    console.log(question_id);
+    console.log('total' + question_id);
     const datas = await this.surveyModel
       .aggregate([
         {
@@ -311,6 +313,7 @@ export class NolanService {
       ])
       .exec();
     const questionId = datas.map((item) => item.question_id);
+    console.log('dayNolan Quetion_Id' + questionId);
     const resultData = await this.surveyModel
       .aggregate([
         {
