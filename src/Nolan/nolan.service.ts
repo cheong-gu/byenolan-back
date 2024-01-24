@@ -13,8 +13,9 @@ export class NolanService {
     @InjectModel(Nolan.name) private nolanModel: Model<Nolan>,
     @InjectModel(Survey.name) private surveyModel: Model<Survey>,
   ) {
-    cron.schedule('0 0 * * *', () => {
-      this.question_id = this.dayNolan();
+    cron.schedule('0 0 * * *', async () => {
+      console.log(new Date());
+      this.question_id = await this.dayNolan();
       console.log(this.question_id);
       this.updateNolan(this.question_id);
     });
@@ -152,7 +153,8 @@ export class NolanService {
       console.log('questionId is undefiend' + question);
       return this.total(question);
     } else {
-      console.log('questionId is exist' + this, this.question_id);
+      console.log('questionId is exist' + this.question_id);
+
       return this.total(this.question_id);
     }
   }
